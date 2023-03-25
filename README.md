@@ -1,6 +1,6 @@
 # 16-Authentication-and-Security
 
-- User authentication
-- Connect to MongoDB
-- Verify user's Register & Login information
+- Level 1 security: match the password stored in the database
+- Level 2 security: mongoose encryption (AES encryption)
+- Level 3 security: hashing encryption (md5 encryption)
 
