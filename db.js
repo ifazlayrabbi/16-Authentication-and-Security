@@ -2,7 +2,7 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 mongoose.connect('mongodb+srv://'+process.env.user+':'+process.env.pass+'@cluster0.pbwxcxc.mongodb.net/authDB')
-const encrypt = require('mongoose-encryption')
+// const encrypt = require('mongoose-encryption')
 
 
 
@@ -19,7 +19,7 @@ const userSchema = mongoose.Schema({
   }
 })
 
-userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})
+// userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})
 
 const User = mongoose.model('User', userSchema)
 exports.User = User

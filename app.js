@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 require('dotenv').config()
+const md5 = require('md5')
 
 const {User} = require('./db')
 
@@ -40,7 +41,7 @@ app.post('/register', (req, res) => {
   const {email, password} = req.body
   const user = new User({
     email: email,
-    password: password
+    password: md5(password)
   })
   user.save()
   .then(() => {
@@ -52,10 +53,10 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
   const {email, password} = req.body
-
+  
   User.find({email: email})
   .then(userData => {
-    if(userData[0].password === password){
+    if(userData[0].password === md5(password)){
       res.render('secrets')
     }
     else {
