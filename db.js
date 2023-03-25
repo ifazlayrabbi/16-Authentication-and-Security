@@ -1,6 +1,9 @@
 
 const mongoose = require('mongoose')
 mongoose.connect('mongodb+srv://'+process.env.user+':'+process.env.pass+'@cluster0.pbwxcxc.mongodb.net/authDB')
+const encrypt = require('mongoose-encryption')
+
+
 
 
 
@@ -14,8 +17,17 @@ const userSchema = mongoose.Schema({
     required: [true, 'Password missing !!']
   }
 })
+
+const secret = 'this_is_a_very_very_long_string'
+userSchema.plugin(encrypt, {secret: secret, encryptedFields: ['password']})
+
 const User = mongoose.model('User', userSchema)
 exports.User = User
+
+
+
+
+
 
 
 
