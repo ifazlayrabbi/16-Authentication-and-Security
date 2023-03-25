@@ -19,8 +19,7 @@ const userSchema = mongoose.Schema({
   }
 })
 
-const secret = process.env.long_string
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ['password']})
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})
 
 const User = mongoose.model('User', userSchema)
 exports.User = User
