@@ -18,8 +18,7 @@ const userSchema = mongoose.Schema({
   }
 })
 
-const secret = 'this_is_a_very_very_long_string'
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ['password']})
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})
 
 const User = mongoose.model('User', userSchema)
 exports.User = User
@@ -32,9 +31,9 @@ exports.User = User
 
 
 const user1 = new User({
-  email: 'Rahim@gmail.com',
-  password: '12aA'
+  email: 'fazlay.rabbi@gmail.com',
+  password: 'aa12'
 })
-// user1.save()
-// .then(() => console.log('New user registered.'))
-// .catch(err => console.log(err.message))
+user1.save()
+.then(() => console.log('New user registered.'))
+.catch(err => console.log(err.message))
