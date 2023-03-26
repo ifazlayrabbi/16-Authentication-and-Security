@@ -16,7 +16,8 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password missing !!']
-  }
+  },
+  encryptionType: String
 })
 
 // userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']})

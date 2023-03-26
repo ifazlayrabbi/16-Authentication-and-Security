@@ -15,12 +15,6 @@ const {User} = require('./db')
 
 
 
-// User.find()
-// .then(userData => console.log(userData))
-// .catch(err => console.log(err.message))
-
-
-
 
 
 app.get('/', (req, res) => {
@@ -37,8 +31,16 @@ app.get('/register', (req, res) => {
 
 
 
+
+
+
+
+
+////////////////////////////  md5 Hash Encryption  /////////////////////////////
+
 app.post('/register', (req, res) => {
   const {email, password} = req.body
+  
   const user = new User({
     email: email,
     password: md5(password)
@@ -57,6 +59,7 @@ app.post('/login', (req, res) => {
   User.find({email: email})
   .then(userData => {
     if(userData[0].password === md5(password)){
+
       res.render('secrets')
     }
     else {
@@ -66,6 +69,36 @@ app.post('/login', (req, res) => {
   })
   .catch(err => console.log(err.message))
 })
+
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// User.find()
+// .then(userData => console.log(userData))
+// .catch(err => console.log(err.message))
+
+
+// User.updateOne(
+//   {email: 'fazlay.rabbi@gmail.com'},
+//   {$set: {encryptionType: 'Only Match password - stored in database'}}
+// )
+// .then(() => console.log('Name added of the encryption method.'))
+// .catch(err => console.log(err.message))
+
+
 
 
 
