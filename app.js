@@ -9,7 +9,8 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 require('dotenv').config()
-const md5 = require('md5')
+// const md5 = require('md5')
+const bcrypt = require('bcrypt')
 
 const {User} = require('./db')
 
@@ -38,7 +39,7 @@ app.get('/register', (req, res) => {
 
 ////////////////////////////  md5 Hash Encryption  /////////////////////////////
 
-function hash(){
+function md5_hash(){
   app.post('/register', (req, res) => {
     const {email, password} = req.body
     
@@ -71,7 +72,7 @@ function hash(){
     .catch(err => console.log(err.message))
   })
 }
-// hash()
+// md5_hash()
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -86,51 +87,116 @@ function hash(){
 
 ////////////////////////////  md5 Hash Encryption + salt  /////////////////////////////
 
-app.post('/register', (req, res) => {
-  const {email, password} = req.body
-  
-  if(email && password){
-    const user = new User({
-      email: email,
-      password: md5(password+process.env.SALT)
-    })
-    user.save()
-    .then(() => {
-      console.log('New user created.')
-      res.render('secrets')
-    })
-    .catch(err => console.log(err.message))
-  }
-  else{
-    console.log('Email or Password Empty!')
-    res.send('<h2>Email or Password Empty!</h2>')
-  }
-})
-
-app.post('/login', (req, res) => {
-  const {email, password} = req.body
-  
-  User.find({email: email})
-  .then(userData => {
-    if(userData[0].password === md5(password + process.env.SALT)){
-
-      res.render('secrets')
+function md5_hash_with_salt() {
+  app.post('/register', (req, res) => {
+    const {email, password} = req.body
+    
+    if(email && password){
+      const user = new User({
+        email: email,
+        password: md5(password+process.env.SALT)
+      })
+      user.save()
+      .then(() => {
+        console.log('New user created.')
+        res.render('secrets')
+      })
+      .catch(err => console.log(err.message))
     }
-    else {
-      console.log('Email or Password Error!')
+    else{
+      console.log('Email or Password Empty!')
+      res.send('<h2>Email or Password Empty!</h2>')
+    }
+  })
+  
+  app.post('/login', (req, res) => {
+    const {email, password} = req.body
+    
+    User.find({email: email})
+    .then(userData => {
+      if(userData[0].password === md5(password + process.env.SALT)){
+  
+        res.render('secrets')
+      }
+      else {
+        console.log('Email or Password Error!')
+        res.send('<h2>Email or Password Error!</h2>')
+      }
+    })
+    .catch(err => {
+      console.log(err.message)
       res.send('<h2>Email or Password Error!</h2>')
-    }
+    })
   })
-  .catch(err => {
-    console.log(err.message)
-    res.send('<h2>Email or Password Error!</h2>')
-  })
-})
+}
+// md5_hash_with_salt()
 
 /////////////////////////////////////////////////////////////////////////////////
 
 
 
+
+
+
+
+
+
+
+
+////////////////////////////  bcrypt Hash Encryption + salt rounds  /////////////////////////////
+
+function bcrypt_hash() {
+  app.post('/register', (req, res) => {
+    const {email, password} = req.body
+    
+    if(email && password){
+      const saltRounds = 15
+      bcrypt.hash(password, saltRounds)
+      .then(hash => {
+        const user = new User({
+          email: email,
+          password: hash
+        })
+        user.save()
+        .then(() => {
+          console.log('New user created.')
+          res.render('secrets')
+        })
+        .catch(err => console.log(err.message))
+      })
+    }
+    else{
+      console.log('Email or Password Empty!')
+      res.send('<h2>Email or Password Empty!</h2>')
+    }
+  })
+  
+  app.post('/login', (req, res) => {
+    const {email, password} = req.body
+    
+    User.find({email: email})
+    .then(userData => {
+
+      bcrypt.compare(password, userData[0].password)
+      .then(result => {
+        if(result){
+          res.render('secrets')
+        }
+        else {
+          console.log('Email or Password Error!')
+          res.send('<h2>Email or Password Error!</h2>')
+        }
+      })
+    })
+    .catch(err => {
+      console.log(err.message)
+      res.send('<h2>Email or Password Error!</h2>')
+    })
+  })
+}
+bcrypt_hash()
+
+/////////////////////////////////////////////////////////////////////////////////
 
 
 
