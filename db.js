@@ -34,6 +34,6 @@ const user1 = new User({
   email: 'fazlay.rabbi@gmail.com',
   password: 'aa12'
 })
-user1.save()
-.then(() => console.log('New user registered.'))
-.catch(err => console.log(err.message))
+// user1.save()
+// .then(() => console.log('New user registered.'))
+// .catch(err => console.log(err.message))
