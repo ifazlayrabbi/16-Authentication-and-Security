@@ -8,14 +8,16 @@ md5 Hash Encryption
 - Level 1 security: match the password stored in the database
 - Level 2 security: Mongoose encryption (AES encryption)
 - Level 3 security: md5 Hash Encryption
-                    (hash = md5(password))
-                    (hash = md5(password + salt))  fast decryption (20B MD5 Hashes/s)
+
+1. hash = md5(password)
+2. hash = md5(password + salt)  
+* Problem: fast decryption (20B MD5 Hashes/s)
+
+---------------------------
 
 
-
-
-
-
+Threats
+---------------------------
 * Hash Table
 * Dictionary Attack/ Password Attack
 * SQL Injection
@@ -27,11 +29,12 @@ md5 Hash Encryption
 
 
 Summary
-------------
+---------------------------
 1. match database
 2. AES encryption (mongoose-encryption)
 
-3. hash = md5(password)
-   salt
-   hash = md5(password + salt)
+3. md5 Hash Encryption
+- hash = md5(password)
+- salt
+- hash = md5(password + salt)
 
