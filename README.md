@@ -1,5 +1,10 @@
 # 16-Authentication-and-Security
 
+Security: Level 3
+-------------------------
+md5 Hash Encryption
+
+
 - Level 1 security: match the password stored in the database
 - Level 2 security: Mongoose encryption (AES encryption)
 - Level 3 security: md5 Hash Encryption
