@@ -10,7 +10,7 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'))
 require('dotenv').config()
 // const md5 = require('md5')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt') 
 
 const {User} = require('./db')
 
