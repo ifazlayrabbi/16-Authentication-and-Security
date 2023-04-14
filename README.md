@@ -1,8 +1,5 @@
 # 16-Authentication-and-Security
-
-Security: Level 4
--------------------------
-bcrypt Hash Encryption
+Website: https://bcrypt-encryption-fr.onrender.com
 
 
 - Level 1 security: match the password stored in the database
