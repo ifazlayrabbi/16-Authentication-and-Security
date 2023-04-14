@@ -2,6 +2,7 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 mongoose.connect('mongodb+srv://'+process.env.user+':'+process.env.pass+'@cluster0.pbwxcxc.mongodb.net/authDB')
+// mongoose.connect('mongodb://127.0.0.1:27017/passportDB')
 // const encrypt = require('mongoose-encryption')
 
 
@@ -11,7 +12,10 @@ mongoose.connect('mongodb+srv://'+process.env.user+':'+process.env.pass+'@cluste
 const userSchema = mongoose.Schema({
   email: {
     type: String,
-    required: [true, 'Email missing !!']
+    required: [true, 'Email missing !!'],
+    unique: true,
+    // index: true,
+    // sparse: true
   },
   password: {
     type: String,

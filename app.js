@@ -6,11 +6,15 @@ const app = express()
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({extended: true}))
 
+require('dotenv').config()
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
-require('dotenv').config()
 // const md5 = require('md5')
-const bcrypt = require('bcrypt')
+const bcryptjs = require('bcryptjs')
+
+const _ = require('lodash')
+const methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 
 const {User} = require('./db')
 
@@ -22,13 +26,27 @@ app.get('/', (req, res) => {
   res.render('home')
 })
 
+app.get('/register', (req, res) => {
+  res.render('register')
+})
+
 app.get('/login', (req, res) => {
   res.render('login')
 })
 
-app.get('/register', (req, res) => {
-  res.render('register')
+app.delete('/logout', (req, res) => {
+  res.redirect('/')
 })
+
+app.get('/submit', (req, res) => {
+  res.render('submit')
+})
+
+app.post('/submit', (req, res) => {
+  const secret = req.body.secret
+  res.send('<h2>'+ secret + '</h2>')
+})
+
 
 
 
@@ -146,52 +164,74 @@ function md5_hash_with_salt() {
 ////////////////////////////  bcrypt Hash Encryption + salt rounds  /////////////////////////////
 
 function bcrypt_hash() {
-  app.post('/register', (req, res) => {
-    const {email, password} = req.body
+  app.post('/register', async (req, res) => {
+    const email = _.toLower(req.body.email)
+    let password = req.body.password
     
     if(email && password){
-      const saltRounds = 15
-      bcrypt.hash(password, saltRounds)
-      .then(hash => {
-        const user = new User({
-          email: email,
-          password: hash
-        })
-        user.save()
-        .then(() => {
-          console.log('New user created.')
-          res.render('secrets')
-        })
-        .catch(err => console.log(err.message))
+      
+      password = await bcryptjs.hash(password, 15)
+
+      User.find({email: email})
+      .then(user => {
+        if(user != ''){
+          console.log('Already registered with that email.')
+          res.send('<h2> Already registered with that email. <a href="/register">Try Again</a></h2>')
+        }
+        else{
+          const user = new User({
+            email: email,
+            password: password
+          })
+          user.save()
+          .then(() => {
+            console.log('New user created.')
+            res.render('secrets')
+          })
+          .catch(err => console.log(err.message))
+        }
       })
     }
     else{
       console.log('Email or Password Empty!')
-      res.send('<h2>Email or Password Empty!</h2>')
+      res.redirect('/register')
     }
   })
   
   app.post('/login', (req, res) => {
-    const {email, password} = req.body
+    const email = _.toLower(req.body.email)
+    const password = req.body.password
     
-    User.find({email: email})
-    .then(userData => {
-
-      bcrypt.compare(password, userData[0].password)
-      .then(result => {
-        if(result){
-          res.render('secrets')
+    if(email && password){
+      User.find({email: email})
+      .then(user => {
+        if(user != ''){
+          bcryptjs.compare(password, user[0].password)
+          .then(true_ => {
+            if(true_){
+              console.log('Successfully logged in.')
+              res.render('secrets')
+            }
+            else {
+              console.log('Password Error.')
+              res.send('<h2>Email or Password Error! <a href="/login">Try Again</a></h2>')
+            }
+          })
         }
-        else {
-          console.log('Email or Password Error!')
-          res.send('<h2>Email or Password Error!</h2>')
+        else{
+          console.log('Email not found.')
+          res.send('<h2>Email or Password Error! <a href="/login">Try Again</a></h2>')
         }
       })
-    })
-    .catch(err => {
-      console.log(err.message)
-      res.send('<h2>Email or Password Error!</h2>')
-    })
+      .catch(err => {
+        console.log(err.message)
+        res.send('<h2>Error! <a href="/login">Try Again</a></h2>')
+      })
+    }
+    else{
+      console.log('Email or Password Empty!')
+      res.redirect('/login')
+    }
   })
 }
 bcrypt_hash()
@@ -214,7 +254,7 @@ bcrypt_hash()
 
 
 // User.updateOne(
-//   {email: 'fazlay.rabbi@gmail.com'},
+//   {email: 'aaa@gmail.com'},
 //   {$set: {encryptionType: 'Only Match password - stored in database'}}
 // )
 // .then(() => console.log('Name added of the encryption method.'))
